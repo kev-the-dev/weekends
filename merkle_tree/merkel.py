@@ -39,10 +39,12 @@ def print_merkle(merkle, indentions):
     root, left, right = merkle
     printable_hash= base64.b16encode(root)
     print( (' ' * indentions) + root.hex())
+    layers_list = [indentions + 1]
     if left is not None:
-        print_merkle(left, indentions + 1)
+        layers_list += [print_merkle(left, indentions + 1)]
     if right is not None:
-        print_merkle(right, indentions + 2)
+        layers_list += [print_merkle(right, indentions + 2)]
+    return max(layers_list)
  
 
 if __name__ == "__main__":
@@ -52,4 +54,5 @@ if __name__ == "__main__":
     file_size_bytes = stat.st_size
     with open(filename, 'rb') as f:
         merk_tuple = merkle(f, 0, file_size_bytes)
-        print_merkle(merk_tuple, 0)
+        layers = print_merkle(merk_tuple, 0)
+        print("{} layers".format(layers))
